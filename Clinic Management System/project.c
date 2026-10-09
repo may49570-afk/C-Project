@@ -3,7 +3,9 @@
 #include <string.h>
 #include "STD.h"
 
-//patient detailsss
+/**
+ * @brief Structure to store patient information.
+ */
 struct patient{
 	u8 name[50];
 	u32 age;
@@ -12,12 +14,24 @@ struct patient{
 	struct patient * next;
 };
 
+/** @brief Pointer to the first patient in the linked list. */
 struct patient * head1 = NULL;
+
+/** @brief Global pointer used to access a searched patient. */
 struct patient * global_pointer=NULL;
+
+/** @brief Array storing the patient ID assigned to each reservation slot. */
 u32 slot_patient_id[5]={0,0,0,0,0};
+
+/** @brief Array containing the available reservation time slots. */
 u8 slot[5][30]={"1- 2:00 - 2:30","2- 2:30 - 3:00","3- 3:00 - 3:30","4- 4:00 - 4:30","5- 4:30 - 5:00"};
 
-
+/**
+ * @brief Searches for a patient using their ID.
+ * @param head1 Pointer to the first patient in the linked list.
+ * @param id ID of the patient to search for.
+ * @return -1 if the patient exists, 1 otherwise.
+ */
 u32 search_ID(struct patient * head1,u32 id){
 	while( head1 != NULL){
 		if(head1->ID==id){ 
@@ -29,13 +43,17 @@ u32 search_ID(struct patient * head1,u32 id){
 	return 1;
 }
 
+/**
+ * @brief Adds a new patient to the linked list.
+ * @param head2 Double pointer to the head of the patient list.
+ */
 void add_patient(struct patient **head2){
 	u32 id;
 	struct patient * last =(struct patient *)malloc(sizeof(struct patient ));
-	
+
 	printf("enter id of patient : ");
 	scanf("%d",&id);
-	
+
 	if (search_ID(*head2,id)==1){
 		last->ID=id;
 		printf("enter name of patient : ");
@@ -63,13 +81,17 @@ void add_patient(struct patient **head2){
 	}
 }
 
+/**
+ * @brief Edits the information of an existing patient.
+ * @param head2 Double pointer to the head of the patient list.
+ */
 void Edit_patient(struct patient **head2){
 	u32 id;
 	struct patient *Edit=*head2;
 
 	printf("please enter ID ");
 	scanf("%d",&id);
-	
+
 	if (search_ID(*head2,id)==-1){
 		Edit->ID=id;
 		printf("Enter new name ");
@@ -87,6 +109,11 @@ void Edit_patient(struct patient **head2){
 	}
 }
 
+/**
+ * @brief Displays the information of a patient.
+ * @param head Pointer to the first patient in the linked list.
+ * @param id ID of the patient whose information will be displayed.
+ */
 void print(struct patient * head,u32 id){	
 	if (search_ID(head,id)==-1){
 			printf("patient Name : %s \n",global_pointer->name);
@@ -99,10 +126,14 @@ void print(struct patient * head,u32 id){
 	}
 }
 
-
+/**
+ * @brief Reserves an available time slot for an existing patient.
+ * @param head1 Pointer to the first patient in the linked list.
+ * @return Reservation status.
+ */
 u32 Reserve(struct patient * head1){
 	u32 id,num;
-	
+
 	for(u32 i=0;i<5;i++){ //print slots avaliable
 		if(slot_patient_id[i]==0){
 			printf("%s  avaliable \n",slot[i]);
@@ -113,22 +144,26 @@ u32 Reserve(struct patient * head1){
 	u32 index=num-1;
 	printf("enter id ");
 	scanf("%d",&id);
-	
+
 	if (search_ID(head1,id)==-1){
 		if(slot_patient_id[index]==0 && index<5 && index>=0){  
 			slot_patient_id[index]=id;
-			
-			
+
+
 		}
 	}
 	else printf("ID not exist\n");
 }
-	
+
+/**
+ * @brief Cancels a patient's reservation.
+ * @param head1 Pointer to the first patient in the linked list.
+ */
 void cancel_reservation(struct patient * head1){
 	u32 num,cancle_ID;
 	printf("enter ID :");
 	scanf("%d",&cancle_ID);
-	
+
 	if (search_ID(head1,cancle_ID)==-1){ 
 		for(u32 i =0;i<5;i++)
 		{
@@ -142,9 +177,13 @@ void cancel_reservation(struct patient * head1){
 		printf("ID not exist\n");
 }	
 
+/**
+ * @brief Displays the admin menu and handles admin operations.
+ * @return 0 when the admin exits the menu.
+ */
 u32 Right_pass(){
 	u32 answer;
-	
+
 	while(1)
 	{
 	printf("1-Add new patient\n");
@@ -179,6 +218,10 @@ u32 Right_pass(){
 	}
 }
 
+/**
+ * @brief Authenticates the administrator using a password.
+ * @return -1 if the maximum number of attempts is exceeded.
+ */
 u32 Admin_mode(){
 	u32 pass,attempts=0;
 	printf("You have 3 attempts \n");
@@ -203,18 +246,25 @@ u32 Admin_mode(){
 	}
 }
 
+/**
+ * @brief Requests a patient ID and displays the patient's record.
+ * @param head1 Pointer to the first patient in the linked list.
+ */
 void View_Patient_Record(struct patient * head1){
 	u32 id;
 	printf("Enter patient ID : ");
 	scanf("%d",&id);
-	
-	if(search_ID(head1,id)==-1){//موجود
+
+	if(search_ID(head1,id)==-1){
 			print(head1,id);
 		}
 	else
 		printf("ID not exist\n");
 }
 
+/**
+ * @brief Displays all reservation slots and their current status.
+ */
 void View_Today_Reservations(){
 	for(u32 i=0;i<5;i++){ //print slots avaliable
 			if(slot_patient_id[i]==0)
@@ -225,6 +275,10 @@ void View_Today_Reservations(){
 	}
 }
 
+/**
+ * @brief Displays the user menu and handles user operations.
+ * @return 0 when the user exits the menu.
+ */
 u32 User_mode(){
 	u32 choice;
 	while(1){
@@ -237,7 +291,7 @@ u32 User_mode(){
 			case 1:
 				View_Patient_Record(head1);
 				break;
-				
+
 			case 2:
 				View_Today_Reservations();
 				break;
@@ -250,7 +304,11 @@ u32 User_mode(){
 	}	
 }
 
-
+/**
+ * @brief Main entry point of the Clinic Management System.
+ * @details Allows the user to select admin mode, user mode, or exit.
+ * @author Mai Essam
+ */
 void main(void){
 	u32 mode;
 	while(1){
@@ -259,7 +317,7 @@ void main(void){
 	printf("3-EXIT\n");
 	printf("Choose the mood : ");
 	scanf("%d",&mode);
-	
+
 	switch (mode){
 	case 1:
 		if(Admin_mode()==-1) return;
